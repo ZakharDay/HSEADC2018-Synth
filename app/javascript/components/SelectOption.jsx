@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import React from 'react'
 
 export default class SelectOption extends React.Component {
@@ -6,13 +7,22 @@ export default class SelectOption extends React.Component {
   }
 
   handleClick = () => {
-    this.props.handleClick(this.props.option)
+    const { option, handleClick } = this.props
+    handleClick(option)
   }
 
   render() {
+    const { option, currentOption } = this.props
+    const { name, price } = option
+
+    const classes = classnames({
+      SelectOption: true,
+      current: option.name == currentOption.name
+    })
+
     return (
-      <div className="SelectOption" onClick={this.handleClick}>
-        {this.props.option}
+      <div className={classes} onClick={this.handleClick}>
+        {name} {price}
       </div>
     )
   }

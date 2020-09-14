@@ -4,42 +4,31 @@ import SelectOption from '../components/SelectOption'
 export default class Select extends React.Component {
   constructor(props) {
     super(props)
-
-    this.state = {
-      isOpened: false,
-      currentOption: props.selectOptions[0]
-    }
   }
 
-  handleClick = () => {
+  handleSelectClick = () => {
     console.log('click')
 
-    this.setState({
-      isOpened: !this.state.isOpened
-    })
+    const { id, handleSelectClick } = this.props
+    handleSelectClick(id)
   }
 
   handleOptionClick = (option) => {
     console.log('option click')
 
-    this.setState({
-      isOpened: !this.state.isOpened,
-      currentOption: option
-    })
+    const { id, handleOptionClick } = this.props
+    handleOptionClick(id, option)
   }
 
   render() {
+    const { currentOption, isOpened, options } = this.props
     let selectOptionElements = []
 
-    // const currentOption = this.state.currentOption
-    // const isOpened = this.state.isOpened
-
-    const { currentOption, isOpened } = this.state
-
-    this.props.selectOptions.forEach((option, i) => {
+    options.forEach((option, i) => {
       selectOptionElements.push(
         <SelectOption
           option={option}
+          currentOption={currentOption}
           handleClick={this.handleOptionClick}
           key={i}
         />
@@ -48,8 +37,8 @@ export default class Select extends React.Component {
 
     return (
       <div className="Select">
-        <div className="current" onClick={this.handleClick}>
-          {currentOption}
+        <div className="current" onClick={this.handleSelectClick}>
+          {currentOption.name} {currentOption.price}
         </div>
 
         {isOpened ? selectOptionElements : ''}
