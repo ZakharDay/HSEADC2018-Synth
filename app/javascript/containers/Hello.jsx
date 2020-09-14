@@ -9,6 +9,17 @@ export default class Hello extends React.Component {
 
     let { menu } = props
 
+    // create web audio api context
+    let audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+
+    // create Oscillator node
+    let oscillator = audioCtx.createOscillator()
+
+    oscillator.type = 'square'
+    oscillator.frequency.setValueAtTime(440, audioCtx.currentTime) // value in hertz
+    oscillator.connect(audioCtx.destination)
+    // oscillator.start()
+
     menu.map((item) => {
       item.isOpened = false
       item.currentOption = item.options[0]
@@ -17,8 +28,16 @@ export default class Hello extends React.Component {
     })
 
     this.state = {
-      menu: menu
+      menu: menu,
+      audioContext: audioCtx,
+      oscillator: {
+        isPlaying: false,
+        isStarted: false,
+        instrument: oscillator
+      }
     }
+
+    console.log(oscillator)
   }
 
   handleOptionClick = (id, option) => {
@@ -46,6 +65,35 @@ export default class Hello extends React.Component {
     })
   }
 
+  togglePlay = () => {
+    const { oscillator, audioContext } = this.state
+
+    if (oscillator.isPlaying) {
+      oscillator.instrument.disconnect(audioContext.destination)
+    } else {
+      oscillator.instrument.connect(audioContext.destination)
+
+      if (!oscillator.isStarted) {
+        oscillator.isStarted = true
+        oscillator.instrument.start()
+      }
+    }
+
+    oscillator.isPlaying = !oscillator.isPlaying
+
+    this.setState({
+      oscillator
+    })
+  }
+
+  handleFrequencyChange = (frequency) => {
+    const { oscillator, audioContext } = this.state
+    oscillator.instrument.frequency.setValueAtTime(
+      frequency,
+      audioContext.currentTime
+    )
+  }
+
   render() {
     const { menu } = this.state
     let selectElements = []
@@ -68,6 +116,10 @@ export default class Hello extends React.Component {
       <div>
         {selectElements}
         <Total menu={menu} />
+        <div onClick={this.togglePlay}>Play/Stop</div>
+        <div onClick={() => this.handleFrequencyChange(220)}>1</div>
+        <div onClick={() => this.handleFrequencyChange(440)}>2</div>
+        <div onClick={() => this.handleFrequencyChange(880)}>3</div>
       </div>
     )
   }
