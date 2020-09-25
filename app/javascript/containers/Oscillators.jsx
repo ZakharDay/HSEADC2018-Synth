@@ -1,60 +1,80 @@
-import { notes } from '../utilities/notes'
-
 import React from 'react'
+import Oscillator from '../components/Oscillator'
 
 export default class Oscillators extends React.Component {
   constructor(props) {
     super(props)
+
+    this.state = {
+      oscillators: []
+    }
   }
 
-  createAudioContextAndOscillator = () => {
-    // create web audio api context
-    let audioCtx = new (window.AudioContext || window.webkitAudioContext)()
-
-    // create Oscillator node
-    let oscillator = audioCtx.createOscillator()
-
-    oscillator.type = 'square'
-    oscillator.frequency.setValueAtTime(440, audioCtx.currentTime) // value in hertz
-    oscillator.connect(audioCtx.destination)
+  createAudioContext = () => {
+    let audioContext = new (window.AudioContext || window.webkitAudioContext)()
 
     this.setState({
-      audioContext: audioCtx,
-      oscillator: {
-        isPlaying: false,
-        isStarted: false,
-        instrument: oscillator
-      },
-      octave: 0
+      audioContext
     })
   }
 
-  togglePlay = () => {
-    const { oscillator, audioContext } = this.state
+  createOscillator = () => {
+    let { audioContext, oscillators } = this.state
 
-    if (oscillator.isPlaying) {
-      oscillator.instrument.disconnect(audioContext.destination)
-    } else {
-      oscillator.instrument.connect(audioContext.destination)
+    let instrument = audioContext.createOscillator()
+    instrument.type = 'square'
+    instrument.frequency.setValueAtTime(440, audioContext.currentTime)
+    instrument.connect(audioContext.destination)
 
-      if (!oscillator.isStarted) {
-        oscillator.isStarted = true
-        oscillator.instrument.start()
-      }
+    let oscillator = {
+      isPlaying: false,
+      isStarted: false,
+      octave: 0,
+      instrument
     }
 
-    oscillator.isPlaying = !oscillator.isPlaying
+    // oscillators = [...oscillators]
+
+    oscillators.push(oscillator)
 
     this.setState({
-      oscillator
+      oscillators
     })
   }
 
-  handleFrequencyChange = (frequency) => {
+  handleTogglePlay = (name) => {
+    const { audioContext, oscillators } = this.state
+    let newOscillators = []
+
+    oscillators.forEach((oscillator, i) => {
+      if (i === name) {
+        if (oscillator.isPlaying) {
+          oscillator.instrument.disconnect(audioContext.destination)
+        } else {
+          oscillator.instrument.connect(audioContext.destination)
+
+          if (!oscillator.isStarted) {
+            oscillator.isStarted = true
+            oscillator.instrument.start()
+          }
+        }
+
+        oscillator.isPlaying = !oscillator.isPlaying
+      }
+
+      newOscillators.push(oscillator)
+    })
+
+    this.setState({
+      oscillators: newOscillators
+    })
+  }
+
+  handleFrequencyChange = (name, frequency) => {
     const { oscillator, audioContext } = this.state
 
     if (!oscillator.isPlaying) {
-      this.togglePlay()
+      this.handleTogglePlay()
     }
 
     oscillator.instrument.frequency.setValueAtTime(
@@ -63,75 +83,37 @@ export default class Oscillators extends React.Component {
     )
   }
 
-  handleOctaveChange = (octave) => {
+  handleOctaveChange = (name, octave) => {
     this.setState({
       octave
     })
   }
 
-  renderPlayButton = () => {
-    if (this.state.oscillator.isPlaying) {
-      return <div onClick={this.togglePlay}>Stop</div>
-    }
-  }
+  renderOscillators = () => {
+    if (this.state.audioContext) {
+      const { oscillators } = this.state
+      let oscillatorElements = []
 
-  renderButtons = () => {
-    if (this.state && this.state.oscillator) {
-      const { octave } = this.state
+      oscillators.forEach((oscillator, i) => {
+        oscillators.push(
+          <Oscillator
+            oscillator={oscillator}
+            handleTogglePlay={this.handleTogglePlay}
+            handleOctaveChange={this.handleOctaveChange}
+            handleFrequencyChange={this.handleFrequencyChange}
+            name={i}
+            key={i}
+          />
+        )
+      })
 
       return (
         <div>
-          {this.renderPlayButton()}
-
-          <div>
-            <div onClick={() => this.handleOctaveChange(0)}>0</div>
-            <div onClick={() => this.handleOctaveChange(1)}>1</div>
-            <div onClick={() => this.handleOctaveChange(2)}>2</div>
-            <div onClick={() => this.handleOctaveChange(3)}>3</div>
-            <div onClick={() => this.handleOctaveChange(4)}>4</div>
-            <div onClick={() => this.handleOctaveChange(5)}>5</div>
-            <div onClick={() => this.handleOctaveChange(6)}>6</div>
-            <div onClick={() => this.handleOctaveChange(7)}>7</div>
-            <div onClick={() => this.handleOctaveChange(8)}>8</div>
-          </div>
-
-          <div>
-            <div onClick={() => this.handleFrequencyChange(notes.C[octave])}>
-              C
-            </div>
-
-            <div onClick={() => this.handleFrequencyChange(notes.D[octave])}>
-              D
-            </div>
-
-            <div onClick={() => this.handleFrequencyChange(notes.E[octave])}>
-              E
-            </div>
-
-            <div onClick={() => this.handleFrequencyChange(notes.F[octave])}>
-              F
-            </div>
-
-            <div onClick={() => this.handleFrequencyChange(notes.G[octave])}>
-              G
-            </div>
-
-            <div onClick={() => this.handleFrequencyChange(notes.A[octave])}>
-              A
-            </div>
-
-            <div onClick={() => this.handleFrequencyChange(notes.B[octave])}>
-              B
-            </div>
-          </div>
+          <div onClick={this.createOscillator}>Create Oscillator</div>
         </div>
       )
     } else {
-      return (
-        <div onClick={this.createAudioContextAndOscillator}>
-          Create Oscillator
-        </div>
-      )
+      return <div onClick={this.createAudioContext}>Project Start</div>
     }
   }
 

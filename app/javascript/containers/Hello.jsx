@@ -65,7 +65,7 @@ export default class Hello extends React.Component {
     })
   }
 
-  togglePlay = () => {
+  handleTogglePlay = () => {
     const { oscillator, audioContext } = this.state
 
     if (oscillator.isPlaying) {
@@ -117,7 +117,7 @@ export default class Hello extends React.Component {
       <div>
         {selectElements}
         <Total menu={menu} />
-        <div onClick={this.togglePlay}>Play/Stop</div>
+        <div onClick={this.handleTogglePlay}>Play/Stop</div>
         <div onClick={() => this.handleFrequencyChange(220)}>1</div>
         <div onClick={() => this.handleFrequencyChange(440)}>2</div>
         <div onClick={() => this.handleFrequencyChange(880)}>3</div>
