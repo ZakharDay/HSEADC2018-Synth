@@ -88,6 +88,7 @@ export default class Hello extends React.Component {
 
   handleFrequencyChange = (frequency) => {
     const { oscillator, audioContext } = this.state
+
     oscillator.instrument.frequency.setValueAtTime(
       frequency,
       audioContext.currentTime
