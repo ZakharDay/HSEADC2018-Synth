@@ -71,7 +71,7 @@ export default class Oscillators extends React.Component {
   }
 
   handleFrequencyChange = (name, frequency) => {
-    const { oscillator, audioContext } = this.state
+    const { audioContext, oscillators } = this.state
 
     if (!oscillator.isPlaying) {
       this.handleTogglePlay()
