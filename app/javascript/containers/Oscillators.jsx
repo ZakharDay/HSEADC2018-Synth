@@ -1,3 +1,5 @@
+import { notes } from '../utilities/notes'
+
 import React from 'react'
 
 export default class Oscillators extends React.Component {
@@ -22,7 +24,8 @@ export default class Oscillators extends React.Component {
         isPlaying: false,
         isStarted: false,
         instrument: oscillator
-      }
+      },
+      octave: 0
     })
   }
 
@@ -37,6 +40,7 @@ export default class Oscillators extends React.Component {
       if (!oscillator.isStarted) {
         oscillator.isStarted = true
         oscillator.instrument.start()
+        oscillator.instrument.stop(audioContext.currentTime + 1)
       }
     }
 
@@ -47,9 +51,72 @@ export default class Oscillators extends React.Component {
     })
   }
 
+  handleFrequencyChange = (frequency) => {
+    const { oscillator, audioContext } = this.state
+
+    oscillator.instrument.frequency.setValueAtTime(
+      frequency,
+      audioContext.currentTime
+    )
+  }
+
+  handleOctaveChange = (octave) => {
+    this.setState({
+      octave
+    })
+  }
+
   renderButtons = () => {
     if (this.state && this.state.oscillator) {
-      return <div onClick={this.togglePlay}>Play/Stop</div>
+      const { octave } = this.state
+
+      return (
+        <div>
+          <div onClick={this.togglePlay}>Play/Stop</div>
+
+          <div>
+            <div onClick={() => this.handleOctaveChange(0)}>0</div>
+            <div onClick={() => this.handleOctaveChange(1)}>1</div>
+            <div onClick={() => this.handleOctaveChange(2)}>2</div>
+            <div onClick={() => this.handleOctaveChange(3)}>3</div>
+            <div onClick={() => this.handleOctaveChange(4)}>4</div>
+            <div onClick={() => this.handleOctaveChange(5)}>5</div>
+            <div onClick={() => this.handleOctaveChange(6)}>6</div>
+            <div onClick={() => this.handleOctaveChange(7)}>7</div>
+            <div onClick={() => this.handleOctaveChange(8)}>8</div>
+          </div>
+
+          <div>
+            <div onClick={() => this.handleFrequencyChange(notes.C[octave])}>
+              C
+            </div>
+
+            <div onClick={() => this.handleFrequencyChange(notes.D[octave])}>
+              D
+            </div>
+
+            <div onClick={() => this.handleFrequencyChange(notes.E[octave])}>
+              E
+            </div>
+
+            <div onClick={() => this.handleFrequencyChange(notes.F[octave])}>
+              F
+            </div>
+
+            <div onClick={() => this.handleFrequencyChange(notes.G[octave])}>
+              G
+            </div>
+
+            <div onClick={() => this.handleFrequencyChange(notes.A[octave])}>
+              A
+            </div>
+
+            <div onClick={() => this.handleFrequencyChange(notes.B[octave])}>
+              B
+            </div>
+          </div>
+        </div>
+      )
     } else {
       return (
         <div onClick={this.createAudioContextAndOscillator}>
@@ -60,6 +127,6 @@ export default class Oscillators extends React.Component {
   }
 
   render() {
-    return <div>{this.renderButtons()}</div>
+    return <div>{this.renderButtons(2)}</div>
   }
 }
