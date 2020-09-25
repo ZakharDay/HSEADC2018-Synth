@@ -40,7 +40,6 @@ export default class Oscillators extends React.Component {
       if (!oscillator.isStarted) {
         oscillator.isStarted = true
         oscillator.instrument.start()
-        oscillator.instrument.stop(audioContext.currentTime + 1)
       }
     }
 
@@ -54,6 +53,10 @@ export default class Oscillators extends React.Component {
   handleFrequencyChange = (frequency) => {
     const { oscillator, audioContext } = this.state
 
+    if (!oscillator.isPlaying) {
+      this.togglePlay()
+    }
+
     oscillator.instrument.frequency.setValueAtTime(
       frequency,
       audioContext.currentTime
@@ -66,13 +69,19 @@ export default class Oscillators extends React.Component {
     })
   }
 
+  renderPlayButton = () => {
+    if (this.state.oscillator.isPlaying) {
+      return <div onClick={this.togglePlay}>Stop</div>
+    }
+  }
+
   renderButtons = () => {
     if (this.state && this.state.oscillator) {
       const { octave } = this.state
 
       return (
         <div>
-          <div onClick={this.togglePlay}>Play/Stop</div>
+          {this.renderPlayButton()}
 
           <div>
             <div onClick={() => this.handleOctaveChange(0)}>0</div>
