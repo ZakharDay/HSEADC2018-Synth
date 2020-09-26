@@ -71,21 +71,40 @@ export default class Oscillators extends React.Component {
   }
 
   handleFrequencyChange = (name, frequency) => {
+    console.log('yo', name)
     const { audioContext, oscillators } = this.state
+    // let newOscillators = []
 
-    if (!oscillator.isPlaying) {
-      this.handleTogglePlay()
-    }
+    oscillators.forEach((oscillator, i) => {
+      if (i === name) {
+        if (!oscillator.isPlaying) {
+          this.handleTogglePlay(name)
+        }
 
-    oscillator.instrument.frequency.setValueAtTime(
-      frequency,
-      audioContext.currentTime
-    )
+        oscillator.instrument.frequency.setValueAtTime(
+          frequency,
+          audioContext.currentTime
+        )
+      }
+
+      // newOscillators.push(oscillator)
+    })
   }
 
   handleOctaveChange = (name, octave) => {
+    const { audioContext, oscillators } = this.state
+    let newOscillators = []
+
+    oscillators.forEach((oscillator, i) => {
+      if (i === name) {
+        oscillator.octave = octave
+      }
+
+      newOscillators.push(oscillator)
+    })
+
     this.setState({
-      octave
+      oscillators: newOscillators
     })
   }
 
@@ -95,7 +114,7 @@ export default class Oscillators extends React.Component {
       let oscillatorElements = []
 
       oscillators.forEach((oscillator, i) => {
-        oscillators.push(
+        oscillatorElements.push(
           <Oscillator
             oscillator={oscillator}
             handleTogglePlay={this.handleTogglePlay}
@@ -110,6 +129,7 @@ export default class Oscillators extends React.Component {
       return (
         <div>
           <div onClick={this.createOscillator}>Create Oscillator</div>
+          {oscillatorElements}
         </div>
       )
     } else {
@@ -118,6 +138,6 @@ export default class Oscillators extends React.Component {
   }
 
   render() {
-    return <div>{this.renderButtons(2)}</div>
+    return <div>{this.renderOscillators()}</div>
   }
 }
