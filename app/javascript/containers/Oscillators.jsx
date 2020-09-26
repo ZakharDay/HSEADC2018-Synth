@@ -71,7 +71,6 @@ export default class Oscillators extends React.Component {
   }
 
   handleFrequencyChange = (name, frequency) => {
-    console.log('yo', name)
     const { audioContext, oscillators } = this.state
     // let newOscillators = []
 
