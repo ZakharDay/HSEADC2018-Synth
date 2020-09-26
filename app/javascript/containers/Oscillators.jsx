@@ -1,5 +1,6 @@
 import React from 'react'
 import Oscillator from '../components/Oscillator'
+import Knob from '../components/Knob'
 
 export default class Oscillators extends React.Component {
   constructor(props) {
@@ -158,6 +159,11 @@ export default class Oscillators extends React.Component {
   }
 
   render() {
-    return <div>{this.renderOscillators()}</div>
+    return (
+      <div>
+        {this.renderOscillators()}
+        <Knob min="-1000" max="1000" current="300" />
+      </div>
+    )
   }
 }

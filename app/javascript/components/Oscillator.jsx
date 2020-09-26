@@ -1,10 +1,17 @@
 import { notes } from '../utilities/notes'
 
 import React from 'react'
+import Slider from '../components/Slider'
+import Knob from '../components/Knob'
 
 export default class Oscillator extends React.Component {
   constructor(props) {
     super(props)
+  }
+
+  handleSliderInput = (frequency) => {
+    const { name, handleFrequencyChange } = this.props
+    handleFrequencyChange(name, frequency)
   }
 
   renderStopButton = () => {
@@ -35,6 +42,8 @@ export default class Oscillator extends React.Component {
       audioContext.currentTime
     )
 
+    oscillator.instrument.detune.setValueAtTime(-300, audioContext.currentTime)
+
     return (
       <div>
         <div>
@@ -62,6 +71,15 @@ export default class Oscillator extends React.Component {
             <span onClick={() => handleOctaveChange(name, 7)}>7</span>
             <span onClick={() => handleOctaveChange(name, 8)}>8</span>
           </div>
+
+          <Slider
+            min="0"
+            max="4000"
+            current={oscillator.frequency}
+            handleInput={this.handleSliderInput}
+          />
+
+          <Knob />
 
           <div>
             <span onClick={() => handleFrequencyChange(name, notes.C[octave])}>

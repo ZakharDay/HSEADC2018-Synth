@@ -1,0 +1,18 @@
+.Knob {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  background: black;
+  border-radius: 25px;
+
+  &::before {
+    position: absolute;
+    top: 0;
+    left: 23px;
+    display: block;
+    content: '';
+    width: 4px;
+    height: 15px;
+    background: white;
+  }
+}
