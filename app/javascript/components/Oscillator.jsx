@@ -18,14 +18,22 @@ export default class Oscillator extends React.Component {
 
   render() {
     const {
+      audioContext,
+      oscillator,
+      name,
       handleTypeChange,
       handleOctaveChange,
-      handleFrequencyChange,
-      oscillator,
-      name
+      handleFrequencyChange
     } = this.props
 
     const { octave } = oscillator
+
+    oscillator.instrument.type = oscillator.type
+
+    oscillator.instrument.frequency.setValueAtTime(
+      oscillator.frequency,
+      audioContext.currentTime
+    )
 
     return (
       <div>

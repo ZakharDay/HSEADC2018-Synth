@@ -22,14 +22,15 @@ export default class Oscillators extends React.Component {
     let { audioContext, oscillators } = this.state
 
     let instrument = audioContext.createOscillator()
-    instrument.type = 'square'
-    instrument.frequency.setValueAtTime(440, audioContext.currentTime)
+    // instrument.type = 'square'
     instrument.connect(audioContext.destination)
 
     let oscillator = {
       isPlaying: false,
       isStarted: false,
       octave: 0,
+      type: 'square',
+      frequency: 440,
       instrument
     }
 
@@ -76,7 +77,7 @@ export default class Oscillators extends React.Component {
 
     oscillators.forEach((oscillator, i) => {
       if (i === name) {
-        oscillator.instrument.type = type
+        oscillator.type = type
       }
 
       newOscillators.push(oscillator)
@@ -93,14 +94,11 @@ export default class Oscillators extends React.Component {
 
     oscillators.forEach((oscillator, i) => {
       if (i === name) {
+        oscillator.frequency = frequency
+
         if (!oscillator.isPlaying) {
           this.handleTogglePlay(name)
         }
-
-        oscillator.instrument.frequency.setValueAtTime(
-          frequency,
-          audioContext.currentTime
-        )
       }
 
       newOscillators.push(oscillator)
@@ -130,18 +128,19 @@ export default class Oscillators extends React.Component {
 
   renderOscillators = () => {
     if (this.state.audioContext) {
-      const { oscillators } = this.state
+      const { audioContext, oscillators } = this.state
       let oscillatorElements = []
 
       oscillators.forEach((oscillator, i) => {
         oscillatorElements.push(
           <Oscillator
+            audioContext={audioContext}
             oscillator={oscillator}
+            name={i}
             handleTogglePlay={this.handleTogglePlay}
             handleTypeChange={this.handleTypeChange}
             handleOctaveChange={this.handleOctaveChange}
             handleFrequencyChange={this.handleFrequencyChange}
-            name={i}
             key={i}
           />
         )
