@@ -70,9 +70,26 @@ export default class Oscillators extends React.Component {
     })
   }
 
+  handleTypeChange = (name, type) => {
+    const { audioContext, oscillators } = this.state
+    let newOscillators = []
+
+    oscillators.forEach((oscillator, i) => {
+      if (i === name) {
+        oscillator.instrument.type = type
+      }
+
+      newOscillators.push(oscillator)
+    })
+
+    this.setState({
+      oscillators: newOscillators
+    })
+  }
+
   handleFrequencyChange = (name, frequency) => {
     const { audioContext, oscillators } = this.state
-    // let newOscillators = []
+    let newOscillators = []
 
     oscillators.forEach((oscillator, i) => {
       if (i === name) {
@@ -86,7 +103,11 @@ export default class Oscillators extends React.Component {
         )
       }
 
-      // newOscillators.push(oscillator)
+      newOscillators.push(oscillator)
+    })
+
+    this.setState({
+      oscillators: newOscillators
     })
   }
 
@@ -117,6 +138,7 @@ export default class Oscillators extends React.Component {
           <Oscillator
             oscillator={oscillator}
             handleTogglePlay={this.handleTogglePlay}
+            handleTypeChange={this.handleTypeChange}
             handleOctaveChange={this.handleOctaveChange}
             handleFrequencyChange={this.handleFrequencyChange}
             name={i}

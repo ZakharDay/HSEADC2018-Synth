@@ -18,6 +18,7 @@ export default class Oscillator extends React.Component {
 
   render() {
     const {
+      handleTypeChange,
       handleOctaveChange,
       handleFrequencyChange,
       oscillator,
@@ -30,6 +31,17 @@ export default class Oscillator extends React.Component {
       <div>
         <div>
           {this.renderStopButton()}
+
+          <div>
+            <span onClick={() => handleTypeChange(name, 'sine')}>Sine</span>
+            <span onClick={() => handleTypeChange(name, 'square')}>Square</span>
+            <span onClick={() => handleTypeChange(name, 'triangle')}>
+              Triangle
+            </span>
+            <span onClick={() => handleTypeChange(name, 'sawtooth')}>
+              Sawtooth
+            </span>
+          </div>
 
           <div>
             <span onClick={() => handleOctaveChange(name, 0)}>0</span>
