@@ -6,9 +6,11 @@ export default class Button extends React.Component {
   }
 
   render() {
+    const { text, handleClick } = this.props
+
     return (
-      <div>
-        Button {this.props.name} {this.props.rap}!
+      <div className="Button" onClick={handleClick}>
+        {text}
       </div>
     )
   }

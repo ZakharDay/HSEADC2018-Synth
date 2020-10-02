@@ -19,6 +19,7 @@ export default class Slider extends React.Component {
         <input
           ref={this.input}
           type="range"
+          step="0.01"
           className="slider"
           min={min}
           max={max}
