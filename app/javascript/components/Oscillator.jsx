@@ -9,9 +9,15 @@ export default class Oscillator extends React.Component {
     super(props)
   }
 
-  handleSliderInput = (frequency) => {
+  handleSliderChange = (frequency) => {
+    console.log('yo')
     const { name, handleFrequencyChange } = this.props
     handleFrequencyChange(name, frequency)
+  }
+
+  handleKnobChange = (detune) => {
+    const { name, handleDetuneChange } = this.props
+    handleDetuneChange(name, detune)
   }
 
   renderStopButton = () => {
@@ -23,17 +29,8 @@ export default class Oscillator extends React.Component {
     }
   }
 
-  render() {
-    const {
-      audioContext,
-      oscillator,
-      name,
-      handleTypeChange,
-      handleOctaveChange,
-      handleFrequencyChange
-    } = this.props
-
-    const { octave } = oscillator
+  setInstrumentValues = () => {
+    const { audioContext, oscillator } = this.props
 
     oscillator.instrument.type = oscillator.type
 
@@ -42,68 +39,89 @@ export default class Oscillator extends React.Component {
       audioContext.currentTime
     )
 
-    oscillator.instrument.detune.setValueAtTime(-300, audioContext.currentTime)
+    oscillator.instrument.detune.setValueAtTime(
+      oscillator.detune,
+      audioContext.currentTime
+    )
+  }
+
+  renderWaveButtons = () => {
+    const { name, handleTypeChange } = this.props
+    const waveTypes = ['sine', 'square', 'triangle', 'sawtooth']
+    let buttonElements = []
+
+    waveTypes.forEach((waveType, i) => {
+      buttonElements.push(
+        <span onClick={() => handleTypeChange(name, waveType)} key={i}>
+          {waveType}
+        </span>
+      )
+    })
+
+    return buttonElements
+  }
+
+  renderOctaveButtons = () => {
+    const { name, handleOctaveChange } = this.props
+    let buttonElements = []
+
+    for (var i = 0; i < 8; i++) {
+      const octave = i
+
+      buttonElements.push(
+        <span onClick={() => handleOctaveChange(name, octave)} key={i}>
+          {i}
+        </span>
+      )
+    }
+
+    return buttonElements
+  }
+
+  renderNoteButtons = () => {
+    const { name, oscillator, handleFrequencyChange } = this.props
+    let buttonElements = []
+
+    Object.keys(notes).forEach((key, i) => {
+      const frequency = notes[key][oscillator.octave]
+
+      buttonElements.push(
+        <span onClick={() => handleFrequencyChange(name, frequency)} key={i}>
+          {key}
+        </span>
+      )
+    })
+
+    return buttonElements
+  }
+
+  render() {
+    const { oscillator } = this.props
+    this.setInstrumentValues()
 
     return (
       <div>
         <div>
           {this.renderStopButton()}
 
-          <div>
-            <span onClick={() => handleTypeChange(name, 'sine')}>Sine</span>
-            <span onClick={() => handleTypeChange(name, 'square')}>Square</span>
-            <span onClick={() => handleTypeChange(name, 'triangle')}>
-              Triangle
-            </span>
-            <span onClick={() => handleTypeChange(name, 'sawtooth')}>
-              Sawtooth
-            </span>
-          </div>
-
-          <div>
-            <span onClick={() => handleOctaveChange(name, 0)}>0</span>
-            <span onClick={() => handleOctaveChange(name, 1)}>1</span>
-            <span onClick={() => handleOctaveChange(name, 2)}>2</span>
-            <span onClick={() => handleOctaveChange(name, 3)}>3</span>
-            <span onClick={() => handleOctaveChange(name, 4)}>4</span>
-            <span onClick={() => handleOctaveChange(name, 5)}>5</span>
-            <span onClick={() => handleOctaveChange(name, 6)}>6</span>
-            <span onClick={() => handleOctaveChange(name, 7)}>7</span>
-            <span onClick={() => handleOctaveChange(name, 8)}>8</span>
-          </div>
+          <div>{this.renderWaveButtons()}</div>
+          <div>{this.renderOctaveButtons()}</div>
 
           <Slider
             min="0"
             max="4000"
             current={oscillator.frequency}
-            handleInput={this.handleSliderInput}
+            handleChange={this.handleSliderChange}
           />
 
-          <Knob />
+          <Knob
+            min="-1000"
+            max="1000"
+            current={oscillator.detune}
+            handleChange={this.handleKnobChange}
+          />
 
-          <div>
-            <span onClick={() => handleFrequencyChange(name, notes.C[octave])}>
-              C
-            </span>
-            <span onClick={() => handleFrequencyChange(name, notes.D[octave])}>
-              D
-            </span>
-            <span onClick={() => handleFrequencyChange(name, notes.E[octave])}>
-              E
-            </span>
-            <span onClick={() => handleFrequencyChange(name, notes.F[octave])}>
-              F
-            </span>
-            <span onClick={() => handleFrequencyChange(name, notes.G[octave])}>
-              G
-            </span>
-            <span onClick={() => handleFrequencyChange(name, notes.A[octave])}>
-              A
-            </span>
-            <span onClick={() => handleFrequencyChange(name, notes.B[octave])}>
-              B
-            </span>
-          </div>
+          <div>{this.renderNoteButtons()}</div>
         </div>
       </div>
     )

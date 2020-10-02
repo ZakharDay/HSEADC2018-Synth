@@ -11,6 +11,12 @@ export default class Oscillators extends React.Component {
     }
   }
 
+  // handleKnobValueChange = (value) => {
+  //   this.setState({
+  //     knobValue: value
+  //   })
+  // }
+
   createAudioContext = () => {
     let audioContext = new (window.AudioContext || window.webkitAudioContext)()
 
@@ -32,6 +38,7 @@ export default class Oscillators extends React.Component {
       octave: 0,
       type: 'square',
       frequency: 440,
+      detune: 0,
       instrument
     }
 
@@ -110,7 +117,29 @@ export default class Oscillators extends React.Component {
     })
   }
 
+  handleDetuneChange = (name, detune) => {
+    const { audioContext, oscillators } = this.state
+    let newOscillators = []
+
+    oscillators.forEach((oscillator, i) => {
+      if (i === name) {
+        oscillator.detune = detune
+
+        if (!oscillator.isPlaying) {
+          this.handleTogglePlay(name)
+        }
+      }
+
+      newOscillators.push(oscillator)
+    })
+
+    this.setState({
+      oscillators: newOscillators
+    })
+  }
+
   handleOctaveChange = (name, octave) => {
+    console.log(octave)
     const { audioContext, oscillators } = this.state
     let newOscillators = []
 
@@ -142,6 +171,7 @@ export default class Oscillators extends React.Component {
             handleTypeChange={this.handleTypeChange}
             handleOctaveChange={this.handleOctaveChange}
             handleFrequencyChange={this.handleFrequencyChange}
+            handleDetuneChange={this.handleDetuneChange}
             key={i}
           />
         )
@@ -159,11 +189,6 @@ export default class Oscillators extends React.Component {
   }
 
   render() {
-    return (
-      <div>
-        {this.renderOscillators()}
-        <Knob min="-1000" max="1000" current="300" />
-      </div>
-    )
+    return <div>{this.renderOscillators()}</div>
   }
 }
