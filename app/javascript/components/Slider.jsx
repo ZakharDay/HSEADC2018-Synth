@@ -12,7 +12,7 @@ export default class Slider extends React.Component {
   }
 
   render() {
-    const { min, max, handleChange } = this.props
+    const { name, min, max, handleChange } = this.props
 
     return (
       <div className="Slider">
@@ -23,7 +23,7 @@ export default class Slider extends React.Component {
           className="slider"
           min={min}
           max={max}
-          onInput={() => handleChange(this.input.current.value)}
+          onInput={() => handleChange(name, this.input.current.value)}
         />
       </div>
     )
